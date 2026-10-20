@@ -1,245 +1,173 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diário de Rota</title>
-    <meta name="theme-color" content="#2980b9">
-    
-    <link rel="icon" type="image/png" href="./assets/icon-192.png">
-    <link rel="apple-touch-icon" href="./assets/icon-192.png">
-    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
-    
-    <link rel="manifest" href="./manifest.json">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AM Apontamentos - Saripan</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+  <meta name="theme-color" content="#002f6c">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    #tela-hub { background-image: url('logo.png'); background-color: #0a192f; background-size: contain; background-repeat: no-repeat; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; min-height: 100vh; width: 100vw; padding: 0; margin: 0; }
+    .hub-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 25, 47, 0.72); z-index: 1; }
+    .hub-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 400px; padding: 20px; }
+    .hub-title { color: white; font-size: 30px; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.8); font-weight: 900; letter-spacing: 1.5px; text-align: center; }
+    .hub-subtitle { color: #90caf9; font-size: 14px; margin-bottom: 45px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
+    .btn-vidro { width: 100%; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 16px; font-size: 16px; font-weight: 800; color: white; cursor: pointer; transition: all 0.3s ease; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .btn-vidro:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); }
+    .btn-apontamento-glass { background: rgba(43, 153, 76, 0.80); } 
+    .btn-registros-glass { background: rgba(43, 108, 176, 0.80); } 
+    .btn-sair-glass { margin-top: 30px; padding: 15px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #ddd; font-size: 13px; border-radius: 10px; }
+    .btn-sair-glass:hover { background: rgba(220, 53, 69, 0.5); border-color: rgba(220, 53, 69, 0.8); color: white; }
+    .btn-icone { font-size: 22px; }
+  </style>
 </head>
 <body>
 
-    <main id="login-view" class="container">
-        <header>
-            <h1>🚚 Diário de Rota</h1>
-            <p>Controle de Frota e Despesas</p>
-        </header>
+  <div id="toast">✅ Operação realizada com sucesso!</div>
 
-        <div id="box-login">
-            <form id="login-form">
-                <div class="input-group"><label>E-mail corporativo</label><input type="email" id="email" required></div>
-                <div class="input-group"><label>Senha</label><input type="password" id="senha" required></div>
-                <button type="submit" id="btn-login" class="btn-primary">Entrar no Sistema</button>
-            </form>
-            
-            <div class="auth-links">
-                <span id="btn-esqueci-senha">Esqueci minha senha</span>
-                <span id="btn-ir-cadastro" style="font-weight: bold;">Primeiro acesso? Registre-se</span>
-            </div>
-        </div>
+  <!-- TELA LOGIN -->
+  <div id="tela-login" class="container-center hidden">
+    <h1 style="color:#002f6c; font-size: 32px; margin-bottom: 5px; text-align: center;">AM Apontamentos</h1>
+    <p style="color:#666; margin-bottom: 30px; font-weight: 600;">Controle de Diárias - Saripan</p>
+    <input type="email" id="emailLogin" class="input-login" placeholder="E-mail" style="max-width: 300px;">
+    <input type="password" id="senhaLogin" class="input-login" placeholder="Senha" style="max-width: 300px;">
+    <button class="btn-action btn-green" onclick="window.fazerLogin()" style="max-width: 300px;">Entrar</button>
+  </div>
 
-        <div id="box-cadastro" class="hidden">
-            <h3 style="margin-bottom: 15px; color: #2c3e50; text-align: center;">Crie sua Conta</h3>
-            <form id="register-form">
-                <div class="input-flex">
-                    <div class="input-group" style="flex: 1;"><label>Nome</label><input type="text" id="reg_nome" required></div>
-                    <div class="input-group" style="flex: 1.5;"><label>Sobrenome</label><input type="text" id="reg_sobrenome" required></div>
-                </div>
-                <div class="input-group"><label>E-mail autorizado</label><input type="email" id="reg_email" required></div>
-                <div class="input-group"><label>Crie sua Senha (Mín 6 caracteres)</label><input type="password" id="reg_senha" minlength="6" required></div>
-                
-                <button type="submit" id="btn-register" class="btn-primary" style="background-color: #27ae60;">Finalizar Cadastro</button>
-            </form>
-            
-            <div class="auth-links" style="justify-content: center; margin-top: 20px;">
-                <span id="btn-ir-login">⬅ Já tenho conta. Voltar ao Login</span>
-            </div>
-        </div>
+  <!-- TELA HUB -->
+  <div id="tela-hub" class="hidden">
+    <div class="hub-overlay"></div>
+    <div class="hub-content">
+      <div class="hub-title">ALEX MIGUEL</div>
+      <div class="hub-subtitle">Gestão Saripan</div>
+      <button class="btn-vidro btn-apontamento-glass" onclick="window.abrirAbaHub('registrar')"><span class="btn-icone">⏱️</span> APONTAMENTO</button>
+      <button class="btn-vidro btn-registros-glass" onclick="window.abrirAbaHub('historico')"><span class="btn-icone">📋</span> REGISTROS</button>
+      <button class="btn-vidro btn-sair-glass" onclick="window.sairApp()">Sair da Conta</button>
+    </div>
+  </div>
 
-        <p style="text-align: center; margin-top: 30px; font-size: 12px; color: #95a5a6;">
-            🔒 Acesso restrito. O cadastro só é permitido para e-mails pré-aprovados pela gestão.
-        </p>
-    </main>
-
-    <main id="dashboard-view" class="container hidden">
-        <header class="dashboard-header">
-            <div class="user-info">
-                <p id="current-date" class="date-display"></p>
-                <h2 id="user-greeting">Olá!</h2>
-            </div>
-            <button id="btn-logout" class="btn-logout">Sair</button>
-        </header>
-
-        <div class="nav-tabs">
-            <button id="tab-btn-frota" class="tab-btn active">🚛 Gestão de Frota</button>
-            <button id="tab-btn-motoristas" class="tab-btn">👨‍✈️ Gestão de Motoristas</button>
-        </div>
-
-        <div id="view-frota" class="fade-in">
-            <p class="subtitle" style="margin-bottom: 15px; text-align: center;">Selecione o veículo abaixo:</p>
-            <section class="truck-selection">
-                <button class="truck-card" data-placa="CVP8281"><h3>CVP8281</h3><p>Caminhão Principal</p></button>
-                <button class="truck-card" data-placa="CLH5G02"><h3>CLH5G02</h3><p>Caminhão Secundário</p></button>
-            </section>
-
-            <div id="panel-veiculo" class="hidden fade-in">
-                <div class="panel-header">
-                    <h3>Painel: <span class="placa-label" style="color: #2980b9;"></span></h3>
-                    <button id="btn-back-home" class="btn-back">⬅ Fechar</button>
-                </div>
-
-                <div class="action-buttons-container">
-                    <button id="btn-open-trip" class="btn-full">➕ Registrar Nova Viagem</button>
-                    <button id="btn-open-fuel" class="btn-half btn-fuel">⛽ Abastecimento</button>
-                    <button id="btn-open-maint" class="btn-half btn-maint">🔧 Manutenção</button>
-                </div>
-
-                <hr class="divider">
-
-                <section class="history-section">
-                    <h3 id="history-title">📄 Linha do Tempo Financeira</h3>
-                    <div id="accordion-container">
-                        <p class="loading-text">Selecione um caminhão...</p>
-                    </div>
-                </section>
-            </div>
-        </div>
-
-        <div id="view-motoristas" class="hidden fade-in">
-            <section class="history-section">
-                <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px; text-align: center;">📄 Contas a Pagar / Pagas</h3>
-                <div id="motoristas-container">
-                    <p class="loading-text">Carregando dados financeiros...</p>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <div id="trip-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-btn close-modal">&times;</span>
-            <h2 id="trip-modal-title" style="margin-bottom: 15px;">Nova Viagem - <span class="placa-label"></span></h2>
-            
-            <form id="trip-form">
-                <input type="hidden" id="edit-trip-id" value="">
-
-                <div class="form-section">
-                    <h3>📍 Rota e Datas</h3>
-                    <div class="input-group"><label>Data de Carregamento</label><input type="date" id="data_viagem" required></div>
-                    <div class="input-group"><label>Data de Entrega (Opcional)</label><input type="date" id="data_entrega"></div>
-                    <div class="input-group"><label>Origem (Carregamento)</label><input type="text" id="origem" placeholder="Ex: São Paulo - SP" required></div>
-                    
-                    <div class="input-group">
-                        <label>Destinos de Entrega</label>
-                        <div class="input-flex">
-                            <input type="text" id="destino_input" placeholder="Ex: Rio de Janeiro - RJ">
-                            <button type="button" id="btn-add-destino" class="btn-secondary">Adicionar</button>
-                        </div>
-                        <ul id="lista-destinos" class="dynamic-list"></ul>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Notas Fiscais</label>
-                        <div class="input-flex">
-                            <input type="text" id="nf_input" placeholder="Ex: 123456">
-                            <button type="button" id="btn-add-nf" class="btn-secondary">Adicionar</button>
-                        </div>
-                        <ul id="lista-nfs" class="dynamic-list"></ul>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>📝 Observações no trajeto</h3>
-                    <div class="input-group">
-                        <label>Observações Escritas</label>
-                        <textarea id="observacoes" placeholder="Relate avarias, gastos não planejados..."></textarea>
-                    </div>
-                    <div class="input-group">
-                        <label>Relatos de Voz (Anexe quantos quiser)</label>
-                        
-                        <div class="audio-controls-wrapper">
-                            <button type="button" id="btn-record-audio" class="btn-whatsapp">
-                                <span id="record-icon">🎤</span> <span id="record-text">Gravar Áudio</span>
-                            </button>
-                            <div id="recording-timer" class="hidden">
-                                <span class="pulse-dot"></span> <span id="timer-text">00:00</span>
-                            </div>
-                        </div>
-
-                        <div id="lista-audios-container"></div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>💰 Receitas e Despesas</h3>
-                    <div class="input-group"><label>Frete Bruto (R$)</label><input type="number" step="0.01" id="valor_frete" class="calc-input"></div>
-                    
-                    <div class="input-group">
-                        <label style="color: #e67e22;">Adicionar Despesas de Motorista</label>
-                        <div style="background: #fff; padding: 10px; border: 1px solid #bdc3c7; border-radius: 8px;">
-                            <input type="text" id="nome_mot_input" placeholder="Nome do Motorista" style="width: 100%; margin-bottom: 8px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <div style="display: flex; gap: 5px; margin-bottom: 8px;">
-                                <input type="number" step="0.01" id="vt_mot_input" placeholder="VT (R$)" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                <input type="number" step="0.01" id="va_mot_input" placeholder="VA/VR (R$)" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                <input type="number" step="0.01" id="diaria_mot_input" placeholder="Diária (R$)" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                            <button type="button" id="btn-add-desp-mot" class="btn-secondary" style="width: 100%; background-color: #34495e;">+ Adicionar ao Cartão</button>
-                        </div>
-                        <ul id="lista-desp-mot" class="dynamic-list" style="margin-top: 10px;"></ul>
-                    </div>
-
-                    <div class="input-group"><label>Gastos c/ Pedágio (R$)</label><input type="number" step="0.01" id="desp_pedagio" class="calc-input"></div>
-                </div>
-
-                <div class="form-section">
-                    <h3>🛣️ Quilometragem</h3>
-                    <div class="input-group"><label>Km Inicial</label><input type="number" id="km_inicio" class="calc-km"></div>
-                    <div class="input-group"><label>Km Final</label><input type="number" id="km_final" class="calc-km"></div>
-                    <p class="result-text">Rodado: <strong id="km_total_display">0</strong> km</p>
-                </div>
-
-                <div class="summary-section">
-                    <h3>📊 Fechamento Parcial/Total</h3>
-                    <p>Despesas (Pedágio + Motoristas): R$ <span id="total_despesas_display">0.00</span></p>
-                    <p class="highlight-net">LÍQUIDO: R$ <span id="total_liquido_display">0.00</span></p>
-                </div>
-
-                <button type="submit" id="btn-save-trip" class="btn-primary">💾 Salvar Viagem</button>
-            </form>
-        </div>
+  <!-- APP PRINCIPAL -->
+  <div id="app" class="container hidden">
+    
+    <div class="app-header">
+      <button class="btn-nav-top" onclick="window.voltarAoHub()">⬅ Hub</button>
+      <div id="app-title" class="app-title">SARIPAN - ALEX MIGUEL</div>
+      <button id="btn-privacidade" class="btn-nav-top" onclick="window.togglePrivacidade()" title="Modo Privacidade">👁️</button>
     </div>
 
-    <div id="fuel-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-btn close-modal">&times;</span>
-            <h2 style="margin-bottom: 15px; color: #e67e22;">⛽ Abastecer - <span class="placa-label"></span></h2>
-            <form id="fuel-form">
-                <div class="form-section">
-                    <div class="input-group"><label>Data</label><input type="date" id="fuel-data" required></div>
-                    <div class="input-group"><label>Km do Caminhão</label><input type="number" id="fuel-km" required></div>
-                    <div class="input-group"><label>Litros</label><input type="number" step="0.01" id="fuel-litros" required></div>
-                    <div class="input-group"><label>Valor Pago (R$)</label><input type="number" step="0.01" id="fuel-valor" required></div>
-                </div>
-                <button type="submit" id="btn-save-fuel" style="background-color: #f39c12; color: white;">💾 Salvar</button>
-            </form>
+    <div class="master-module active">
+      <div class="fixed-area">
+        <div class="tabs-container">
+          <button id="btn-tab-registrar" class="tab-btn active" onclick="window.mudarAba('registrar')">⏱️ Apontamento</button>
+          <button id="btn-tab-historico" class="tab-btn" onclick="window.mudarAba('historico')">📋 Registros</button>
         </div>
-    </div>
+      </div>
+      
+      <div class="scroll-content">
+        <!-- ABA 1: APONTAMENTO -->
+        <div id="painel-registrar" class="panel active">
+          <div class="form-box">
+            <h3 class="form-title">Novo Apontamento</h3>
+            
+            <label>Data do Serviço:</label>
+            <input type="date" id="dataServico" style="margin-bottom: 15px; padding: 15px; font-size: 16px;">
+            
+            <div style="margin-bottom: 15px;">
+              <label>Bandeira (Jornada):</label>
+              <select id="tipoBandeira" style="padding: 14px; font-size: 16px; font-weight: bold; color: #0d47a1;">
+                <option value="1">Bandeira 1 (1 Diária)</option>
+                <option value="2">Bandeira 2 (2 Diárias)</option>
+              </select>
+            </div>
 
-    <div id="maint-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-btn close-modal">&times;</span>
-            <h2 style="margin-bottom: 15px; color: #d35400;">🔧 Manutenção - <span class="placa-label"></span></h2>
-            <form id="maint-form">
-                <div class="form-section">
-                    <div class="input-group"><label>Data</label><input type="date" id="maint-data" required></div>
-                    <div class="input-group"><label>Km do Caminhão</label><input type="number" id="maint-km" required></div>
-                    <div class="input-group"><label>Serviço/Peça</label><input type="text" id="maint-servico" required></div>
-                    <div class="input-group"><label>Oficina</label><input type="text" id="maint-oficina"></div>
-                    <div class="input-group"><label>Valor (R$)</label><input type="number" step="0.01" id="maint-valor" required></div>
-                </div>
-                <button type="submit" id="btn-save-maint" style="background-color: #d35400; color: white;">💾 Salvar</button>
-            </form>
+            <div class="grid-input">
+              <div>
+                <label>Valor da Diária (R$):</label>
+                <input type="number" id="valorBase" step="0.01" placeholder="0.00" style="font-weight: bold; color: #1565c0;">
+              </div>
+              <div>
+                <label>Previsão do Dia:</label>
+                <input type="text" id="previewValor" class="esconder-valor" readonly style="background: #eee; font-weight: bold; color: #2e7d32;">
+              </div>
+            </div>
+            
+            <button class="btn-action btn-green" onclick="window.adicionarRegistro()">✅ Confirmar Apontamento</button>
+          </div>
+          
+          <div id="rodape-dinamico" style="margin-top: 25px; padding: 0 10px;">
+            <div id="rodape-ref" style="text-align: center; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 6px; text-transform: uppercase;">Referência: --</div>
+            <table style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #000;">
+              <thead>
+                <tr style="background-color: #5b9bd5; color: white;">
+                  <th style="border: 1px solid #000; padding: 12px; text-align: center;">QTD de Diárias</th>
+                  <th style="border: 1px solid #000; padding: 12px; text-align: center;">Total na Quinzena (R$)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td id="rodape-qtd" style="border: 1px solid #000; padding: 12px; font-weight: bold; font-size: 18px; text-align: center;">0</td>
+                  <td id="rodape-total" class="esconder-valor" style="border: 1px solid #000; padding: 12px; font-weight: bold; font-size: 18px; color: #2e7d32; text-align: center;">R$ 0,00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-    </div>
 
-    <script type="module" src="js/firebase-init.js"></script>
-    <script type="module" src="js/app.js"></script>
-    <script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }</script>
+        <!-- ABA 2: REGISTROS / HISTÓRICO -->
+        <div id="painel-historico" class="panel">
+          <h3 style="color:#0d47a1; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-top: 0;">Fechamentos por Quinzena</h3>
+          <div id="lista-quinzenas-container"></div>
+          <div id="msg-sem-dados" style="text-align:center; padding: 40px; color:#999; display:none;">Nenhum apontamento registrado ainda.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER PRINT OCULTO (GERADOR DE IMAGEM WHATSAPP) -->
+  <div id="print-container" style="position: absolute; top: -9999px; left: -9999px; z-index: -9999; width: 800px;">
+    <div id="print-template" style="width: 800px; background: white; padding: 40px; font-family: Arial, sans-serif; color: #000; box-sizing: border-box;">
+      <h1 style="font-size: 28px; margin: 0 0 20px 0; color: #000;">SARIPAN - Relatório de Diárias</h1>
+      <div style="font-size: 18px; line-height: 1.6; margin-bottom: 20px;">
+        <div><strong>Prestador:</strong> Alex Miguel</div>
+        <div id="print-ref">Referência: --</div>
+      </div>
+      <div style="font-size: 18px; line-height: 1.6; margin-bottom: 30px;">
+        <div style="font-weight: bold;">Resumo do Período:</div>
+        <div style="font-weight: bold; margin-top: 10px; font-size: 20px; color: #002f6c;" id="print-total-diarias">Total: -- diárias a receber</div>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 16px;">
+        <thead>
+          <tr style="background-color: #00AEEF; color: #000;">
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Data</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Dia da Semana</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Bandeira</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: right;">Valor Apurado</th>
+          </tr>
+        </thead>
+        <tbody id="print-tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" style="padding: 15px 12px; text-align: right; font-weight: bold; border: none; font-size: 18px;">Valor Total da Quinzena:</td>
+            <td style="padding: 15px 12px; font-weight: bold; border: none; text-align: right; font-size: 18px; color: #2e7d32;" id="print-valor-total">R$ 0,00</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script type="module" src="app.js"></script>
+  
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(() => console.log('SW ok')).catch(() => console.log('SW erro'));
+      });
+    }
+  </script>
 </body>
 </html>
